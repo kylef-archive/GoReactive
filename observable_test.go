@@ -59,6 +59,15 @@ func wait(t *testing.T, observable Observable) []interface{} {
 }
 
 
+func TestStartWith(t *testing.T) {
+  observable := oneToFiveObservable()
+  values := wait(t, StartWith(observable, 100))
+
+  assert.Equal(t, values, []interface{}{100, 1, 2, 3, 4, 5})
+}
+
+
+
 func TestSkipSkipsValues(t *testing.T) {
   observable := oneToFiveObservable()
   values := wait(t, Skip(observable, 2))

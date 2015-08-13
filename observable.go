@@ -13,6 +13,22 @@ type Observable interface {
 }
 
 
+// Start with
+
+type startWithObservable struct {
+  initial interface{}
+  observable Observable
+}
+
+func (observable startWithObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+  next(observable.initial)
+  observable.observable.Subscribe(next, completion, failure)
+}
+
+func StartWith(observable Observable, value interface{}) Observable {
+  return startWithObservable{ observable: observable, initial: value }
+}
+
 // Skip
 
 type skipObservable struct {
