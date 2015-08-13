@@ -10,31 +10,12 @@ import (
 
 /// Returns an observable which emits 1, 2, 3, 4, and 5 then completion
 func oneToFiveObservable() Observable {
-  return NewObservable(func(subject *Subject) Disposable {
-    subject.SendNext(1)
-    subject.SendNext(2)
-    subject.SendNext(3)
-    subject.SendNext(4)
-    subject.SendNext(5)
-    subject.SendCompletion()
-    return nil
-  })
+  return NewObservableSlice([]interface{}{1, 2, 3, 4, 5})
 }
 
 /// Returns an observable which emits 1, 1, 2, 3, 3, 4, 5 and 5 then completion
 func oneishToFiveObservable() Observable {
-  return NewObservable(func(subject *Subject) Disposable {
-    subject.SendNext(1)
-    subject.SendNext(1)
-    subject.SendNext(2)
-    subject.SendNext(3)
-    subject.SendNext(3)
-    subject.SendNext(4)
-    subject.SendNext(5)
-    subject.SendNext(5)
-    subject.SendCompletion()
-    return nil
-  })
+  return NewObservableSlice([]interface{}{1, 1, 2, 3, 3, 4, 5, 5})
 }
 
 

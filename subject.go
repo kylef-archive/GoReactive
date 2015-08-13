@@ -87,3 +87,15 @@ func NewObservable(closure func(*Subject) Disposable) Observable {
 }
 
 
+/// Returns an Observable from a slice
+func NewObservableSlice(values []interface{}) Observable {
+  return NewObservable(func(subject *Subject) Disposable {
+    for _, value := range values {
+      subject.SendNext(value)
+    }
+    subject.SendCompletion()
+    return nil
+  })
+}
+
+
