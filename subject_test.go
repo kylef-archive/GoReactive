@@ -18,6 +18,7 @@ func TestSubjectSendingCompletion(t *testing.T) {
   subject.SendCompletion()
 
   assert.True(t, completed)
+  assert.True(t, subject.IsStopped())
 }
 
 
@@ -32,6 +33,7 @@ func TestSubjectSendingError(t *testing.T) {
   subject.SendError(nil)
 
   assert.True(t, failed)
+  assert.True(t, subject.IsStopped())
 }
 
 
@@ -46,6 +48,7 @@ func TestSubjectSendingNext(t *testing.T) {
   subject.SendNext(nil)
 
   assert.True(t, next)
+  assert.False(t, subject.IsStopped())
 }
 
 
@@ -68,6 +71,7 @@ func TestSubjectNewObservableDisposable(t *testing.T) {
   observable := NewObservable(func(subject *Subject) Disposable {
     return NewDisposable(func() {
       disposed = true
+      assert.True(t, subject.IsDisposed())
     })
   })
 

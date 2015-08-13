@@ -23,33 +23,57 @@ type Subject struct {
   onCompletion func()
   onError func(error)
   dispose func()
+
+  stopped bool
+  disposed bool
+}
+
+func (subject *Subject) IsStopped() bool {
+  return subject.stopped
+}
+
+
+func (subject *Subject) IsDisposed() bool {
+  return subject.disposed
 }
 
 
 func (subject *Subject) SendNext(value interface{}) {
-  if subject.onNext != nil {
+  if !subject.IsStopped() && subject.onNext != nil {
     subject.onNext(value)
   }
 }
 
 
 func (subject *Subject) SendCompletion() {
-  if subject.onCompletion != nil {
-    subject.onCompletion()
+  if !subject.IsStopped() {
+    subject.stopped = true
+
+    if subject.onCompletion != nil {
+      subject.onCompletion()
+    }
   }
 }
 
 
 func (subject *Subject) SendError(err error) {
-  if subject.onError != nil {
-    subject.onError(err)
+  if !subject.IsStopped() {
+    subject.stopped = true
+
+    if subject.onError != nil {
+      subject.onError(err)
+    }
   }
 }
 
 
 func (subject *Subject) Dispose() {
-  if subject.dispose != nil {
-    subject.dispose()
+  if !subject.IsDisposed() {
+    subject.disposed = true
+
+    if subject.dispose != nil {
+      subject.dispose()
+    }
   }
 }
 
@@ -78,7 +102,9 @@ func (ns *newSubject) Subscribe(next func(interface{}), completion func(), failu
     disposable = NewDisposable(nil)
   }
 
-  return disposable
+  ns.subject.dispose = func() { disposable.Dispose() }
+
+  return ns.subject
 }
 
 
