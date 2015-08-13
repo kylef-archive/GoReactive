@@ -20,6 +20,20 @@ func oneToFiveObservable() Observable {
 }
 
 
+func TestSkipSkipsValues(t *testing.T) {
+  observable := oneToFiveObservable()
+  skippedObservable := Skip(observable, 2)
+
+  values := []int{}
+  skippedObservable.Subscribe(
+      func(value interface{}) { values = append(values, value.(int)) },
+      func() {},
+      func(err error) {})
+
+  assert.Equal(t, values, []int{3, 4, 5})
+}
+
+
 func TestMap(t *testing.T) {
   observable := oneToFiveObservable()
 

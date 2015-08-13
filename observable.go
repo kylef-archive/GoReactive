@@ -13,6 +13,32 @@ type Observable interface {
 }
 
 
+// Skip
+
+type skipObservable struct {
+  until int
+  observable Observable
+}
+
+
+func (observable skipObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+  closure := func(value interface{}) {
+    if observable.until > 0 {
+      observable.until--
+    } else {
+      next(value)
+    }
+  }
+
+  observable.observable.Subscribe(closure, completion, failure)
+}
+
+
+/// Returns an Observable that returns the given Observables values after skipping the given until amount of next's
+func Skip(observable Observable, until int) Observable {
+  return skipObservable{ observable: observable, until: until }
+}
+
 // Map
 
 type mappedObservable struct {
