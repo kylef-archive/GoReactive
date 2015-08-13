@@ -1,6 +1,11 @@
 package GoReactive
 
 
+type Disposable interface {
+  Dispose()
+}
+
+
 type Observer interface {
   Next(value interface{})
   Error(err error)
@@ -9,7 +14,7 @@ type Observer interface {
 
 
 type Observable interface {
-  Subscribe(next func(interface{}), completion func(), failure func(error))
+  Subscribe(next func(interface{}), completion func(), failure func(error)) Disposable
 }
 
 
@@ -20,9 +25,9 @@ type startWithObservable struct {
   observable Observable
 }
 
-func (observable startWithObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+func (observable startWithObservable) Subscribe(next func(interface{}), completion func(), failure func(error))  Disposable {
   next(observable.initial)
-  observable.observable.Subscribe(next, completion, failure)
+  return observable.observable.Subscribe(next, completion, failure)
 }
 
 func StartWith(observable Observable, value interface{}) Observable {
@@ -37,7 +42,7 @@ type skipObservable struct {
 }
 
 
-func (observable skipObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+func (observable skipObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) Disposable {
   closure := func(value interface{}) {
     if observable.until > 0 {
       observable.until--
@@ -46,7 +51,7 @@ func (observable skipObservable) Subscribe(next func(interface{}), completion fu
     }
   }
 
-  observable.observable.Subscribe(closure, completion, failure)
+  return observable.observable.Subscribe(closure, completion, failure)
 }
 
 // Distinct Until Changed
@@ -56,7 +61,7 @@ type distrinctUntilChangedObservable struct {
   previous interface{}
 }
 
-func (observable distrinctUntilChangedObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+func (observable distrinctUntilChangedObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) Disposable {
   closure := func(value interface{}) {
     if observable.previous != value {
       next(value)
@@ -64,7 +69,7 @@ func (observable distrinctUntilChangedObservable) Subscribe(next func(interface{
     }
   }
 
-  observable.observable.Subscribe(closure, completion, failure)
+  return observable.observable.Subscribe(closure, completion, failure)
 }
 
 /// Returns an observable of values which are not equal to the previous value
@@ -86,8 +91,8 @@ type mappedObservable struct {
 }
 
 
-func (observable mappedObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
-  observable.observable.Subscribe(func(value interface{}) {
+func (observable mappedObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) Disposable {
+  return observable.observable.Subscribe(func(value interface{}) {
                                     next(observable.transform(value))
                                   },
                                   completion, failure)
@@ -107,8 +112,8 @@ type filterObservable struct {
 }
 
 
-func (observable filterObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
-  observable.observable.Subscribe(func(value interface{}) {
+func (observable filterObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) Disposable {
+  return observable.observable.Subscribe(func(value interface{}) {
                                     if observable.filter(value) {
                                       next(value)
                                     }

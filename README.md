@@ -55,8 +55,9 @@ subject.SendError(err)
 `NewObservable` is a function for creating an Observable, which when subscribed, it will call a callback allowing you to send events using a `Subject`.
 
 ```go
-observable := NewObservable(func(subject *Subject) {
+observable := NewObservable(func(subject *Subject) Disposable {
   subject.SendNext("Hello, my subscriber.")
+  return nil
 })
 ```
 

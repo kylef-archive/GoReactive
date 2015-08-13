@@ -50,8 +50,9 @@ func TestSubjectSendingNext(t *testing.T) {
 
 
 func TestSubjectNewObservable(t *testing.T) {
-  observable := NewObservable(func(subject *Subject) {
+  observable := NewObservable(func(subject *Subject) Disposable {
     subject.SendCompletion()
+    return nil
   })
 
   completed := false
@@ -60,5 +61,19 @@ func TestSubjectNewObservable(t *testing.T) {
                     func() { completed = true },
                     func(err error) {})
   assert.True(t, completed)
+}
+
+func TestSubjectNewObservableDisposable(t *testing.T) {
+  disposed := false
+  observable := NewObservable(func(subject *Subject) Disposable {
+    return NewDisposable(func() {
+      disposed = true
+    })
+  })
+
+  disposable := observable.Subscribe(nil, nil, nil)
+  disposable.Dispose()
+
+  assert.True(t, disposed)
 }
 
