@@ -33,6 +33,29 @@ func (observable skipObservable) Subscribe(next func(interface{}), completion fu
   observable.observable.Subscribe(closure, completion, failure)
 }
 
+// Distinct Until Changed
+
+type distrinctUntilChangedObservable struct {
+  observable Observable
+  previous interface{}
+}
+
+func (observable distrinctUntilChangedObservable) Subscribe(next func(interface{}), completion func(), failure func(error)) {
+  closure := func(value interface{}) {
+    if observable.previous != value {
+      next(value)
+      observable.previous = value
+    }
+  }
+
+  observable.observable.Subscribe(closure, completion, failure)
+}
+
+/// Returns an observable of values which are not equal to the previous value
+func DistinctUntilChanged(observable Observable) Observable {
+  return distrinctUntilChangedObservable{ observable: observable }
+}
+
 
 /// Returns an Observable that returns the given Observables values after skipping the given until amount of next's
 func Skip(observable Observable, until int) Observable {

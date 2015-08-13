@@ -20,6 +20,21 @@ func oneToFiveObservable() Observable {
   })
 }
 
+/// Returns an observable which emits 1, 1, 2, 3, 3, 4, 5 and 5 then completion
+func oneishToFiveObservable() Observable {
+  return NewObservable(func(subject *Subject) {
+    subject.SendNext(1)
+    subject.SendNext(1)
+    subject.SendNext(2)
+    subject.SendNext(3)
+    subject.SendNext(3)
+    subject.SendNext(4)
+    subject.SendNext(5)
+    subject.SendNext(5)
+    subject.SendCompletion()
+  })
+}
+
 
 /// Subscribes to an observable returning once it completes or fails
 func wait(t *testing.T, observable Observable) []interface{} {
@@ -49,6 +64,14 @@ func TestSkipSkipsValues(t *testing.T) {
   values := wait(t, Skip(observable, 2))
 
   assert.Equal(t, values, []interface{}{3, 4, 5})
+}
+
+
+func TestDistinctUntilChanged(t *testing.T) {
+  observable := oneishToFiveObservable()
+  values := wait(t, DistinctUntilChanged(observable))
+
+  assert.Equal(t, values, []interface{}{1, 2, 3, 4, 5})
 }
 
 
