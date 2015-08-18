@@ -1,0 +1,6 @@
+dependencies:
+  override:
+    - sudo apt-get install golang
+test:
+  override:
+    - go test
