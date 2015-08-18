@@ -1,5 +1,7 @@
 # GoReactive
 
+[![Build Status](https://img.shields.io/circleci/project/kylef/GoReactive/master.svg)](https://circleci.com/gh/kylef/GoReactive)
+
 GoReactive is a Go library for [Function Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming), a library for representing and consuming asyncronous data streams with Observables.
 
 ## Usage
