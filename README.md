@@ -8,7 +8,7 @@ GoReactive is a Go library for [Function Reactive Programming](https://en.wikipe
 
 ### Observables
 
-At it's simplest form, an `Observable` as an interface which allows you to subscribe to events, the next value, the completion or the failure.
+At it's simplest form, an `Observable` is an interface which allows you to subscribe to events, the next value, the completion or the failure.
 
 ```go
 observable.Subscribe(
